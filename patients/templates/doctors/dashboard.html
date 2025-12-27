@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Dashboard</title>
+</head>
+<body>
+    <h2>Doctor Dashboard</h2>
+
+    <h3>Today's Appointments</h3>
+
+    <ul>
+        {% for a in appointments %}
+            <li>
+                Patient: {{ a.patient.user.username }} |
+                {{ a.appointment_date }} {{ a.appointment_time }} |
+                Status: {{ a.status }}
+
+                <form method="post" action="/appointments/doctor/update/{{ a.id }}/">
+                    {% csrf_token %}
+                    <button name="action" value="confirm">Confirm</button>
+                    <button name="action" value="complete">Complete</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>No appointments</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

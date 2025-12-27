@@ -1,0 +1,84 @@
+[
+ {'username': 'devadmin', 'role': 'DEVELOPER', 'is_staff': True, 'is_superuser': True},
+ {'username': 'hospitaladmin', 'role': 'ADMIN', 'is_staff': True, 'is_superuser': False},
+ {'username': 'doctor1', 'role': 'DOCTOR', 'is_staff': False, 'is_superuser': False},
+ {'username': 'patient1', 'role': 'PATIENT', 'is_staff': False, 'is_superuser': False},
+]
+✅ CREATE USERS VIA DJANGO SHELL (FINAL & SAFE)
+1️⃣ Open Django Shell (from project root)
+python manage.py shell
+
+2️⃣ Import Required Models
+from core.models import User
+from patients.models import PatientProfile
+from doctors.models import DoctorProfile
+
+3️⃣ CREATE DEVELOPER (SYSTEM ADMIN)
+dev = User.objects.create_user(
+    username="devadmin",
+    password="dev123",
+    role="DEVELOPER"
+)
+dev.is_staff = True
+dev.is_superuser = True
+dev.save()
+
+
+✅ Can access /admin/
+✅ Full system control
+❌ No medical data access
+
+4️⃣ CREATE HOSPITAL ADMIN (LIMITED ADMIN)
+admin_user = User.objects.create_user(
+    username="hospitaladmin",
+    password="admin123",
+    role="ADMIN"
+)
+admin_user.is_staff = True
+admin_user.is_superuser = False
+admin_user.save()
+
+
+✅ Can access /admin/
+✅ Can view masked patient problems
+❌ Cannot see phone / gender / address
+❌ Cannot touch MongoDB records
+
+5️⃣ CREATE DOCTOR (NO ADMIN ACCESS)
+doctor_user = User.objects.create_user(
+    username="doctor1",
+    password="doctor123",
+    role="DOCTOR"
+)
+doctor_user.is_staff = False
+doctor_user.is_superuser = False
+doctor_user.save()
+
+DoctorProfile.objects.create(
+    user=doctor_user,
+    specialization="Cardiology"
+)
+
+
+✅ Can POST medical records
+❌ Cannot open /admin/
+❌ Cannot see admin UI
+❌ Cannot modify users
+
+6️⃣ CREATE PATIENT (NO ADMIN ACCESS)
+patient_user = User.objects.create_user(
+    username="patient1",
+    password="patient123",
+    role="PATIENT"
+)
+patient_user.is_staff = False
+patient_user.is_superuser = False
+patient_user.save()
+
+PatientProfile.objects.create(
+    user=patient_user,
+    phone_number="9999999999",
+    gender="Male",
+    address="Hyderabad",
+    problem_summary="Chest pain"
+)
