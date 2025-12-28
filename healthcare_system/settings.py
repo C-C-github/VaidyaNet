@@ -1,4 +1,6 @@
 from pathlib import Path
+import sys
+import certifi
 
 # --------------------------------------------------
 # BASE
@@ -88,20 +90,30 @@ DATABASES = {
         'NAME': 'healthcare_db',
         'CLIENT': {
             'host': 'mongodb+srv://satkurikailash_db_user:LXQ70z9WCLeX25o8@cluster0.dbizlsl.mongodb.net/healthcare_db',
+            'tls': True,
+            'tlsCAFile': certifi.where(),
+            # 'tlsAllowInvalidCertificates': True,  # use only for temporary debugging
         }
     }
 }
 
 
 
+# quick test DB override: use in-memory sqlite to avoid Atlas/TLS issues during tests
+if 'test' in sys.argv:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': ':memory:',
+    }
+
 # --------------------------------------------------
 # AUTHENTICATION
 # --------------------------------------------------
 AUTH_USER_MODEL = 'core.User'
 
-LOGIN_URL = '/admin/login/'
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/admin/login/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 
 # --------------------------------------------------

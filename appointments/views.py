@@ -1,16 +1,15 @@
 from django.http import JsonResponse, Http404
 from django.db import IntegrityError, transaction
-from core.permissions import patient_required
+from django.views.decorators.http import require_POST
+from core.permissions import patient_required, doctor_required
 from patients.models import PatientProfile
 from doctors.models import DoctorProfile
 from .models import Appointment
 from audit.utils import log_action
 
+@require_POST
 @patient_required
 def book_appointment(request):
-    if request.method != "POST":
-        raise Http404
-
     try:
         patient = PatientProfile.objects.get(user=request.user)
         doctor_id = request.POST.get("doctor_id")
@@ -48,8 +47,6 @@ def book_appointment(request):
         "status": "Appointment requested",
         "appointment_id": appointment.id
     })
-from core.permissions import doctor_required
-from doctors.models import DoctorProfile
 @doctor_required
 def doctor_update_appointment(request, appointment_id):
     if request.method != "POST":
